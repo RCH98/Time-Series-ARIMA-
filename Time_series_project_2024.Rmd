@@ -1,0 +1,105 @@
+---
+title: "Time series forecasting via ARIMA"
+output: html_notebook
+---
+
+```{r}
+library(forecast)
+library(ggplot2)
+library(tseries)
+
+# Read the data
+data <- read.table("D:\\timeseries\\harvard_fees.csv", sep = ",", header = TRUE)
+total_cost <- ts(data$Total...., start = 1985, frequency = 1)
+print(data)
+```
+
+```{r}
+```
+
+```{r}
+library(forecast)
+library(ggplot2)
+library(tseries)
+
+data <- read.table("D:\\timeseries\\harvard_fees.csv", sep = ",", header = TRUE)
+
+data$Academic.Year <- as.numeric(data$Academic.Year)
+data <- data[order(data$Academic.Year), ]
+
+ts_data <- ts(data$Total, start = min(data$Academic.Year), frequency = 1)
+
+plot(ts_data, main = "Original Time Series: Total Cost of Studying at Harvard",
+     xlab = "Year", ylab = "Total Cost ($)")
+
+diff_data <- diff(ts_data, differences = 1)
+# Plot differenced data
+plot(diff_data, main = "Differenced Time Series",
+     xlab = "Year", ylab = "Change in Total Cost ($)")
+acf(diff_data, main = "ACF of Differenced Data")
+pacf(diff_data, main = "PACF of Differenced Data")
+
+
+p <- 2  
+q <- 1  
+
+model <- Arima(ts_data, order = c(p, 1, q))
+summary(model)
+
+
+forecast_result <- forecast(model, h = 7)
+print("Forecasted values for 2017-2023:")
+print(forecast_result)
+plot(forecast_result, main = paste("ARIMA(", p, ",1,", q, ") Forecast of Total Cost", sep=""),
+     xlab = "Year", ylab = "Total Cost ($)")
+
+
+
+# Compare with real data
+real_data <- c(63025, 65609, 67580, 69607, 72357, 74528, 76763)
+years <- 2017:2023
+
+comparison_df <- data.frame(
+  Year = years,
+  Forecast = as.numeric(forecast_result$mean),
+  Real = real_data,
+  Lower = as.numeric(forecast_result$lower[, "95%"]),
+  Upper = as.numeric(forecast_result$upper[, "95%"])
+)
+
+
+mape <- mean(abs((comparison_df$Real - comparison_df$Forecast) / comparison_df$Real)) * 100
+
+
+
+# Print comparison
+print("Comparison of forecasted and real values:")
+print(comparison_df)
+print(paste("Mean Absolute Percentage Error (MAPE):", round(mape, 2), "%"))
+
+# Create ggplot
+ggplot(comparison_df, aes(x = Year)) +
+  geom_line(aes(y = Forecast, color = "Forecast")) +
+  geom_line(aes(y = Real, color = "Real")) +
+  geom_ribbon(aes(ymin = Lower, ymax = Upper), fill = "blue", alpha = 0.1) +
+  geom_point(aes(y = Forecast, color = "Forecast")) +
+  geom_point(aes(y = Real, color = "Real")) +
+  scale_color_manual(values = c("Forecast" = "blue", "Real" = "red")) +
+  labs(title = paste("ARIMA(", p, ",1,", q, ") Model", sep=""),
+       subtitle = "Forecasted vs Real Total Cost of Studying at Harvard (2017-2023)",
+       x = "Year", 
+       y = "Total Cost ($)",
+       color = "Legend") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+
+
+
+# Save the plot
+ggsave(paste("harvard_forecast_comparison_ARIMA_", p, "_1_", q, ".png", sep=""), width = 10, height = 6)
+
+
+
+```
+
