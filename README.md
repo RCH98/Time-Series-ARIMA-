@@ -22,4 +22,4 @@ This repository showcases a time series forecasting project using an ARIMA-based
 
 1. **Clone the Repository**  
    ```bash
-   git clone https://github.com/<YourUsername>/harvard-cost-forecast.git
+   gh repo clone RCH98/Time-Series-ARIMA-
