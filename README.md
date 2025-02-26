@@ -5,7 +5,7 @@ This repository showcases a time series forecasting project using an ARIMA-based
 
 ## Repository Contents
 
-1. **Report (PDF/HTML)**  
+1. **Report (PDF)**  
    A detailed explanation of the steps taken to prepare, analyze, and interpret the ARIMA model forecasts. It includes data preprocessing, differencing, model selection, and forecasting performance.
 
 2. **R Markdown Notebook (.Rmd)**  
@@ -16,8 +16,7 @@ This repository showcases a time series forecasting project using an ARIMA-based
 
 4. **Generated Plots**  
    - Time series plots of the original data, differenced data, ACF/PACF plots, and forecast vs. actual cost comparisons.
-   - PNG outputs typically named according to the ARIMA parameters used.
-
+  
 ## Getting Started
 
 1. **Clone the Repository**  
